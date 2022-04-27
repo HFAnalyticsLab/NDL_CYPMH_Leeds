@@ -1,6 +1,6 @@
-<img src="ndlbanner.png" width="405" height="96">
-<img src="leeds_ccg_logo.svg" width="405" height="96">
-<img src="leeds_council_logo.png" width="405" height="96">
+<img src="ndlbanner.png" width="32%">
+<img src="leeds_ccg_logo.svg" width="32%">
+<img src="leeds_council_logo.png" width="32%">
 
 # Networked Data Lab: NDL Leeds analysis on access of childrens' and young people's mental health services and transition to adult mental health services.
 
