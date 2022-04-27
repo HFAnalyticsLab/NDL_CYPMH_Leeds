@@ -1,6 +1,8 @@
-<img src="ndlbanner.png" width="32%">
-<img src="leeds_ccg_logo.svg" width="32%">
-<img src="leeds_council_logo.png" width="32%">
+<p float="left">
+    <img src="ndlbanner.png" width="32%">
+    <img src="leeds_ccg_logo.svg" width="32%">
+    <img src="leeds_council_logo.png" width="32%">
+</p>
 
 # Networked Data Lab: NDL Leeds analysis on access of childrens' and young people's mental health services and transition to adult mental health services.
 
@@ -37,11 +39,11 @@ These scripts were written in R (4.1.3) and SQL (SQL Server 13), and utilise RSt
 
 ## Getting started
 
-A short description of what each code does, and what each file is. *[please fill in]*.
+To run the project
 
 ## Authors
 
-- Benjamin Alcock - [email](ben.alcock1@nhs.net) | [Twitter](https://twitter.com/benjaminalcock)
+- Benjamin Alcock - [email](ben.alcock1@nhs.net)
 - Frank Wood - [email](frank.wood@leeds.gov.uk)
 - Alex Brownrigg - [email](a.brownrigg@nhs.net)
 - Souheila Fox - [email](souheila.fox@nhs.net)
