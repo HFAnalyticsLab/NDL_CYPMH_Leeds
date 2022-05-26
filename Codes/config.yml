@@ -1,0 +1,5 @@
+default:
+    # Modify to suit, if user has username and password rather than trusted connection then remove `trusted_connection` and add `uid`, `pwd`, and `port` 
+    driver: "Enter driver type here..."
+    server: "Server containing Leeds Data Model"
+    trusted_connection: TRUE

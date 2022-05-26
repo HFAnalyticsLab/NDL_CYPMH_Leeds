@@ -1,6 +1,6 @@
 <p float="left">
     <img src="ndlbanner.png" width="32%">
-    <img src="leeds_ccg_logo.svg" width="32%">
+    <img src="leeds_ccg_logo.png" width="32%">
     <img src="leeds_council_logo.png" width="32%">
 </p>
 
@@ -39,7 +39,32 @@ These scripts were written in R (4.1.3) and SQL (SQL Server 13), and utilise RSt
 
 ## Getting started
 
-To run the project
+To run the project, go to the `/Codes/` directory. If running using RStudio, then 
+load the `leeds-project-2.RProj` file, which will set the paths. If RStudio 
+isn't being used, then please set the working directory to `Codes` via
+`setwd('.../NDL_CYPMH_Leeds/Codes')`.
+
+Two versions of the report can be created: the full report, or an executive 
+summary. To build the full report, please run `NDLProject2.Rmd`, and to build 
+the summary report please run `NDLProject2ExecutiveSummary.Rmd`. No patient data
+is required to build the summary report, so this can be built immediately, but 
+to build the full report, patient identifiable data is required.
+
+As patient data has not been saved in this repository, a direct connection to 
+the Leeds Data Model (LDM) database will be required, which is administered by 
+Leeds CCG and the North East Commissioning Service (NECS). Please contact 
+Souheila Fox if you believe you should have permission to access this data.
+
+Once you have access to the LDM, you can update `Codes/config.yml` with the 
+correct driver and server to access. By default, it is assumed that you have a 
+trusted connection, but if you have been given a username and password then you 
+can enter them there.
+
+### Outputs
+If you do not have permission to access any data then the aggregated outputs are
+still available for access. The final versions of the reports are saved in the
+`/Report/` directory, and aggregated data taken from the full version of the 
+report can be found in `output/figure_outputs/`.
 
 ## Authors
 
