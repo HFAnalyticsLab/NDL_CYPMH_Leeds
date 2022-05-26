@@ -1,0 +1,1074 @@
+---
+title: "__NHS Leeds CCG & City Council Satellite Analysis__"
+subtitle: "Mental Health of Children and Young People in Leeds"
+author: "Benjamin Alcock, Alex Brownrigg, Souheila Fox, Frank Wood"
+date: "`r lubridate::today()`"
+fontsize: 10pt
+output:
+  bookdown::pdf_document2:
+    toc: TRUE
+    fig_caption: yes
+    fig_width: 6
+    fig_height: 4
+bibliography: references.bib
+header-includes: 
+  - \renewcommand\refname{References}
+link-citations: true
+linkcolor: blue
+---
+
+\pagebreak
+
+```{r setup, file = 'chunks/setup.R', include = FALSE}
+```
+
+# Introduction
+
+A large proportion of mental illnesses develop by early-adulthood
+[@kessler2007age], with up to 75% of major mental illnesses having presented
+by age 25 [@solmi2021age]. However, despite the increased need during this
+period, the consistency of help via NHS mental health services varies greatly,
+particularly around age 18 where patients are transferred from child and adolescent mental health 
+services (CAMHS) to adult mental health services (AMHS). Additionally, studies across England have shown that 
+the distribution of mental illnesses is not homogeneous across the population,
+with sexual identity, ethnic background, level of deprivation, and social and
+family circumstances all contributing to increased levels of mental illness 
+[@nhsd2017cypmh].
+
+Across Leeds, comparison with prevalence studies [@nhsd2017cypmh] has suggested 
+that only 36% of the expected population at risk is receiving mental health
+support, with variations across key factors such as sexual identity and social 
+and family circumstances unknown. This study aims to extend research around this
+area, and aims to answer the following questions:
+
+> Has the mental health service across Leeds met the needs of children and young 
+people (C&YP; aged 11-25), and to what extent has the service been used across 
+the different communities throughout Leeds? Does this reflect the demographic 
+picture identified by national prevalence modelling?
+
+> What pathways for referral are used by C&YP, and how does entry into the 
+service and contact once in the service vary across different communities? What
+effect if any does the transition of care from child/adolescent to adult 
+services have on people's outcomes? How do pathways differ from acute care into 
+dedicated mental health services after mental health related inpatient spells?
+
+> What, if any, impact has the COVID 19 pandemic had on referrals, service use 
+and outcomes for this cohort?
+
+By looking at both the coverage of mental health services across Leeds
+and the pathways of people once they're in contact with the service, we can
+get a full view of the key areas of need for communities.
+
+## Data 
+All NHS data-sources used in analysis were available at patient level and were 
+routinely collected, with linkage enabled for most patients via a pseudonymised
+NHS Number. External data sets were linked in on geography level. The following 
+data sources were used in analysis:
+
+* Mental Health Services Data Set (MHSDS), comprising data from all NHS-funded 
+  mental-health organisations. Data included patient lists and associated
+  demographics; referrals, including sources, routes, and outcomes; and care
+  contacts/activities. Data did not include IAPT referrals or IAPT care 
+  contacts.
+* Secondary Uses Service (SUS), comprising data from all secondary care
+  providers. Data included inpatient, outpatient, and accident and emergency.
+* Yorkshire Ambulance Service Data (YAS), including 111 calls.
+* Improving Access to Psychological Therapies (IAPT), comprised of data for
+  patients with anxiety and depression.
+* Primary Care Records for all Leeds-registered patients (from EMIS & SystmOne)
+* Mortality data
+* Office of National Statistics census data and population estimates
+* LSOA level deprivation data (Indices of Deprivation)
+
+## Design
+
+Four main outputs were identified through discussion with a Task and Finish 
+Group (TFG), consisting of Leeds Networked Data Lab (NDL) analysts, mental 
+health service users, and mental health service providers. For the first output, 
+we aimed to frame patterns of service use and inequalities in service 
+provision through descriptive statistics across key factors. Output two was 
+aimed to quantify patterns of access to mental health services, investigating 
+referral sources and routes, and breaking these down further by demographic 
+factors. Output three looked at the effect of the CAMHS-to-AMHS transition, and 
+more generally the causes of patient dropout. Additionally, in output three we 
+investigated non-dedicated mental health service usage, looking at inpatient 
+spells and comparing patient demographics with those within the mental health 
+service, and analysing patient post-crisis episode entry into the mental health 
+service. Finally, in output four, we quantified the change in the mental health
+service due to the COVID-19 pandemic and look at the effects on patients before,
+during, and after the national lockdowns.
+
+It was highlighted by the TFG that a significant amount of work in the past had
+been performed which focussed on people with depression and anxiety disorders, 
+while relatively little had been done on people with more complex conditions. As
+such, it was decided that we would focus on non-IAPT services, as these were 
+more likely to cover a range of conditions and needs, and analysis into these 
+would provide the most benefit to services across the city.
+
+Different cohorts were used for these outputs:
+
+* Outputs 1 and 2 were centred upon patients known to the mental health service,
+and so all patients referred to dedicated mental health services (i.e. all 
+patients recorded within MHSDS) between April 2016 - March 2021, who were 
+between 11-25 at age of referral were included, with external data such as 
+census/population estimates included for prevalence comparisons.
+* Output 3 required a cross-reference with various healthcare records, and so 
+patients without a valid Leeds Data Model (LDM) pseudonym were excluded from 
+analysis. Output 3 was further split into three segments ("transition", 
+"dropout", and "self-harm"), with different inclusion criteria for each segment.
+  - Patients with at least one care-contact as a 17-18 year old between April 
+  2016 - March 2021 were included in the "transition" segment. The primary data
+  set used in this analysis was MHSDS.
+  - Patients with at least one care-contact as an 11-25 year old between April 
+  2016 - March 2021 were included in the "dropout" segment. The primary data
+  set used in this analysis was MHSDS.
+  - 11-25 year old patients who attended an inpatient spell with a secondary 
+  diagnosis of intentional self-harm or self-poisoning (ICD-10 X60-84) at Leeds 
+  Teaching Hospitals between April 2016 - March 2021 were included in the 
+  "self-harm" segment. Patients who died during or soon-after their hospital 
+  spell were excluded from analysis. The primary data set used in this analysis 
+  was SUS, and and MHSDS, IAPT, and GP mental health appointments were used to
+  gauge patients' passages into the mental health service post-spell.
+* For Output 4, 11-25 year old patients (at time of referral) who were 
+referred to a dedicated mental health service between April 2016 - March 2021 
+were included for analysis. The primary data set used in this analysis was MHSDS.
+
+### Mental Health Services Data Set Views
+MHSDS consists of 54 tables. Providers 
+submit data on a monthly basis, with generally two submissions for each 
+month (although this can vary). As one submission does not overwrite another
+records are duplicated from the time a patient starts contact with the mental
+health service to the time of discharge. Additionally, there have been 
+modifications to the data structure (with the time-period selected spanning 
+three different versions of the data set) leading to different versions of the 
+54 tables. Another complication is that the Pseudo NHS Number is held in a 
+separate bridging table which is linked to via a Patient ID. There are different 
+patient IDs depending on the data version and therefore separate bridging files,
+making data linkage to supplementary data sets more complicated. 
+
+To simplify the data set for analysis, views of the main tables were created. 
+Each view shows only the data for the latest month and latest submission of each
+record, stitching together the different versions and incorporating Pseudo NHS
+number to allow for linkage to non-mental health data sets.
+
+### Data Definitions
+Some terms are used across analysis, and so definitions are listed here.
+
+* Referral/Service Request - a request made by or on behalf of a patient
+to one or more mental health (MHSDS) teams for a distinct package of care. Each referral
+has a date the referral was made, along with the date the referral was either
+completed, rejected, or cancelled.
+* Care contact - a contact with a mental health service (MHSDS) team. Multiple care 
+contacts can be made within one referral, as patients complete their care. 
+* Care activity - a specific activity within a care contact. Multiple care 
+activities can be made within one care contact, for example if multiple 
+consultation methods are used. For example, if both telephone and SMS services
+are used within one care contact then this may be recorded as two care 
+activities within the same contact.
+* Crisis referral - a crisis referral is a referral to a specific crisis 
+resolution team within the mental health service (MHSDS).
+* CAMHS services - Child and Adolescent Mental Health Services are services 
+offered to 0-18 year olds, with a transition into adult services occurring at 
+some point between the ages of 17-19. Generally within our data, the bulk of NHS
+CAMHS services are offered by Leeds Community Healthcare, and most adult services 
+are offered by Leeds and York Partnership Foundation Trust. However, multiple 
+providers are listed within the data set, each offering services to different 
+cohorts. 
+
+# Output 1 - Demographic Summary 
+
+For Output 1, we were keen to get a broad picture of the people accessing 
+mental health services across Leeds, both in order to gain an understanding of
+associated factors which could increase someone's need to access mental health 
+support, and in order to make a comparison with our understanding of the city on
+a demographic scale. By comparing the groups of service users to a wider view of
+the groups of people living in Leeds, we can probe inequalities in service 
+access and look for the largest areas of improvement.
+
+## Data
+
+Overall, 65 495 service requests (referrals) were included in initial assessment of the 
+mental health cohort. There were over 17 000 patients with a recorded NHS 
+number, but a number of service requests were from patients without an NHS 
+number.
+
+Each record was assigned an index of multiple deprivation from the patient’s 
+Local Super Output Area (LSOA) and categorised by deprivation 
+decile and age band (11-16, 17-19 or 20-25 years). Deprivation data was taken
+from the English Indices of Deprivation, which categorise a number of different
+factors influencing a person's level of deprivation. The Index of Multiple 
+Deprivation (IMD) is a combination of these factors commonly used in subsetting
+data. As one of these factors is related to healthcare usage (for both physical 
+and mental health services) and life-expectancy, this variable was removed from
+the calculation of the IMD score, to reduce correlating variables with 
+themselves.
+
+It should be noted that the mental health data reporting has changed several 
+times between April 2016 to 31st September 2021 and time series analysis showed 
+inconsistent reporting in the first 12-18 months. Therefore, minor 
+inconsistencies between cohort descriptive statistics and later analysis may be 
+reported here, as some early data was removed to optimise the time series 
+modelling process. 
+
+Initial analysis focussed on demographic variables and supplementary variables 
+which were considered important by service providers from Leeds’ TFG. 
+While general population descriptors were of interest to the group 
+(such as differences by age, sex, ethnic background, and deprivation level), 
+further demographic factors were of particular interest to the TFG. These 
+included sexuality and sexual identity (including splitting by transgender 
+identity), whether the service users had parental responsibility, whether they 
+were looked-after children, whether they were young carers, and whether they 
+were on a Child Protection Plan. Unfortunately, data inspection showed that 
+information about most of these supplementary factors was scarce. While this was
+reported to the mental health providers and so may help future analysis, this 
+excludes analysis on these factors for this work.
+
+## Analysis
+
+Demand for mental health services varied across a range of demographic factors.
+For dedicated mental health (MHSDS) patients, across all ages there were 
+significantly more female service users than male users (female users comprising
+$\sim 60\%$ of the total users), and this ratio varied by age; the imbalance was
+greatest between 15-19 year old patients (Fig. \@ref(fig:ageChart), left). This
+imbalance was also seen in the number of care contacts split by gender (Fig.
+\@ref(fig:ageChart), right), with the same increase in number of female service
+users occurring between 15-18 (peaking at around 75% female patient proportion
+for 15 year olds).
+
+```{r ageChart, file = "chunks/ageChart.R", echo = FALSE, fig.cap = "(left) Proportion of female (red) and male (blue) service users by age at earliest referral, with the proportion numerators and denominators coming from the number of service users split by age at first referral and gender, and the number of service users split by age at first referral , respectively. (right) Proportion of female (red) and male (blue) care contacts by age. The numerator and denominator are the number of care contacts split by age at contact and gender, and the number of care contacts split by age at contact, respectively."}
+```
+
+Service usage was imbalanced across deprivation levels. Mid-year population 
+estimates of 11-25 year old residents in Leeds (2019) were used to calculate 
+proportions of numbers of patients, referrals, and crisis referrals split by 
+deprivation deciles (Fig. \@ref(fig:deprivationCharts)).
+Proportionally more people who live in areas of high deprivation use the mental 
+health service than those who live in areas of lower deprivation, although it is
+interesting to note that there is a slight uptick in the proportion of patients
+coming from the least deprived areas (Fig. \@ref(fig:deprivationCharts) top left).
+Not only are proportionally more people who live in more deprived areas in 
+contact with mental health services, they are also requiring more referrals (Fig. \@ref(fig:deprivationCharts) bottom left), and
+are experiencing double the rate of crises than those in the areas of 
+lowest deprivation (Fig. \@ref(fig:deprivationCharts) top right). Here "crises"
+are defined as referrals to a dedicated mental health crisis team.
+
+```{r deprivationCharts, file = "chunks/deprivationChart.R", echo = FALSE, fig.cap = "(top left) Estimated percentage of the population using mental health service within the five-year period, split by deprivation decile, with binomial 95% confidence intervals denoted. (top right) Average number of crisis referrals per patient, split by deprivation decile, with poisson 95% confidence intervals denoted. (bottom left) Average number of total referrals per patient, split by deprivation decile, with poisson 95% confidence intervals denoted. (bottom right) Average number of crisis referrals per referral, split by deprivation decile, with binomial 95% confidence intervals denoted. In all plots, 1 = most deprived, 10 = least deprived. For all plots, each patient is counted once, and their average deprivation score is calculated if they lived in multiple LSOAs. Population denominators from (top left) are drawn purely from ONS 2019 estimates."}
+```
+
+
+```{r ethnicityMsoa, file = "chunks/ethnicityChart.R", echo = FALSE, fig.cap = "Proportion of patients from a BAME background vs proportion of residents from a BAME background. Points show the values for each MSOA, the solid black line shows the 1:1 line, and the dashed blue line shows the linear fit to the data (with the intercept set at 0)."}
+```
+
+Using the 2011 census, the numbers of patients from Black, Asian, and Minority 
+Ethnic (BAME) was compared to the population. Rather than simply calculating the 
+overall (2016-2021) proportion of BAME patients and comparing this to the (2011) 
+proportion of BAME residents within Leeds, we calculated this rate per area to 
+test whether any inequalities were held on a city-wide level, rather than purely 
+focussed in a few specific areas. It should be noted that for this analysis we 
+have assumed that the rate of BAME residents per MSOA has remained unchanged 
+since 2011, which is likely to be increasingly wrong over time, with the 2021 
+population denominators being ten years out of date. A future comparison with 
+the 2021 census data upon release would allow for testing of this assumption.
+
+For each Middle Layer Super Output Area (MSOA), the proportions of both BAME 
+patients and BAME residents were calculated, and for those MSOAs where there 
+were at least 25 patients the two proportions were compared 
+(Fig. \@ref(fig:ethnicityMsoa)). Patients with no ethnicity information recorded 
+were discounted from analysis. Ideally, the proportion of patients from a BAME
+background should closely match the proportion of residents from a BAME
+background, however this is not seen. We find a continued deficit trend, with 
+$\sim `r format(round(unname(coef(linear_fit)), 2), digits = 2)`$ [95% CI: 
+`r format(round(confint(linear_fit)[1], 2), digits = 2)`,
+`r format(round(confint(linear_fit)[2], 2), digits = 2)`] the number of patients 
+from BAME background seen than expected. This comparison was also made on a 
+per-year basis with comparable figures (see [Appendix 2](#appendix3)), although 
+the full five-year comparison is kept here to better constrain confidence 
+intervals.
+
+```{r ageGenderDeprivationChart, file = "chunks/ageGenderDeprivationYearly.R", echo = FALSE, fig.cap = "(top left) Proportion of the Leeds population in contact with the mental health service across deprivation quintiles and split by year. Here, quintile 1 refers to the most deprived population, and 5 refers to the least deprived.(top right/bottom left) Change in proportion of the Leeds population in contact with the mental health service, split by deprivation quintile (top right), and gender (bottom left). (bottom right) Variation of the proportion of the Leeds population in contact with the mental health service across the full age range, split by year. In all figures, error bars/shaded ribbons represent the binomial 95% confidence level."}
+```
+
+Next, looking at the yearly service usage, it is clear that service take-up has 
+increased substantially. Across all deprivation levels we see relatively linear 
+increase in the proportion of the population using services, however the rate of
+increase is not equal across all deprivation quintiles, with the most and least 
+deprived areas featuring the most rapid increase in service use. Inequalities in
+service use were also seen in the gender-split of patients; where in 2016 the
+proportion of the male population of Leeds roughly matched the proportion of the 
+female population, service usage increased far more rapidly among girls/women, 
+leading to a much higher proportion of girls/women by 2021 (around 4.5% of the
+population, compared to around 2.7% of the population for boys/men). Similarly, 
+the increased take-up has differed across ages, with the most rapid increases 
+being seen for 14-17 year olds.
+
+# Output 2 - Referral Routes and Services Accessed 
+
+For the second output, we looked at the methods of entry into the mental health
+service, along with the routes taken through the service by patients. Our aim
+here was to both look for key relationships, and to gauge data suitability for 
+further modelling. The primary data source for this output was MHSDS.
+
+As in Output 1, the supplementary variables of interest (sexual identity, 
+parental responsibility, young carer, looked after child status, and child 
+protection plan status) were extremely inconsistent over the five year data set,
+with very low recording rates. Equally difficult was the fact that some patients
+had multiple entries for the same variable, leading to difficulties in analysing 
+the data properly. Due to these reasons, these variables were again removed for
+analysis, along with patients with no recorded NHS Number.
+
+It was difficult to determine referral routes due to poor population of key 
+fields, especially when broken down by age band. Furthermore, the coding of services
+lacked granularity and categorised referral routes very broadly. Most service 
+requests were from Primary Care (GP practices) and internal referrals. The main 
+other routes for adults were self-referrals, acute secondary care and the 
+justice system. Children and young people were also referred by local 
+authorities and education services/educational establishments. Unfortunately, 
+the source of referral was not recorded for a quarter of referrals. A full list 
+of the number of patients referred via different sources is shown in 
+[Appendix 3](#appendix4). 
+
+There was little clinical information about patients’ mental health disorder 
+recorded, with around 1.4% (916/65495) of all referrals having a primary diagnosis assigned, 
+making it difficult to understand why specific service users were accessing 
+services. Attempts to make proxy identification of mental health disorders from 
+the variables available were unsuccessful, making it difficult to compare 
+with national prevalence data and limited use in further modelling. Members of 
+the Task and Finish group said that clinicians were reluctant to diagnose young 
+people with disorders due to stigma surrounding mental health and impact on the 
+patient’s personal life, which could compound their problems. Furthermore, 
+feedback from commissioners working on mental health pathways say there is 
+variety in the clinical systems used by providers, how data is recorded and what
+is submitted. It is also possible that providers hold diagnoses but there are 
+contractual limitations on submissions to MHSDS, due to legacy ‘minimum’ mental 
+health services data policies which preceded MHSDS and have not been updated.
+
+Other fields were available but, again, they were poorly populated 
+making it difficult to compare between age bands or any other sub-population. 
+Over 45% (31649/65495) of service requests did not have a primary reason for referral. 
+Otherwise, the most common reasons amongst 11–16 year-olds were anxiety, 
+self-harm, neurodevelopmental conditions, depression and eating disorders. 
+Interestingly, the top three reasons for 17–19 year-olds to access services 
+were "unknown", depression and self-harm, showing similarities in the recorded 
+reasons for referral, but great differences in the amount of missing data. 
+However, while these services were generally used similarly across these age 
+bands, crisis service usage varied by age, with almost three times more crisis 
+referrals coming from adults than children and young people.  A full list of the 
+number of patients referred for different reasons is shown in 
+[Appendix 4](#appendix5). 
+
+The specific teams that service users accessed were not recorded in the data, 
+but a grouping of team types was present and was well populated (89% complete: 
+58206/65495 referrals). Community 
+mental health teams, single point of access services, psychiatric liaison 
+services and crisis resolution teams were most in demand in all age bands. While
+these team types are very broad and offer little information as to the types of 
+service offered to service users (e.g. cognitive behavioral therapy, group 
+therapy, counselling, etc), we are still able to look at patterns of use across
+these broad groupings in further analysis. A full list of the number of patients
+using different service team types is shown in [Appendix 5](#appendix6). 
+
+# Output 3 - Transition Analysis and Referral Modelling 
+
+The third output focussed on two major themes - firstly, the theme of patients
+not staying within the service. This was looked at in two distinct but related 
+methods: firstly by looking at patients who had continuous care as they 
+transitioned from CAMHS to adult services we aimed to find key characteristics
+which influenced any person's likelihood of successfully transitioning, in order
+to assess equity across a range of demographic factors. Secondly, we looked more
+generally at the factors associated with any patients likelihood of dropping out
+of the service, either through self-discharge or repeated non-attendence of 
+appointments. These two methods are discussed separately below.
+
+Finally, we investigated pathways into the mental health service and aimed to
+study referral equity by including further data sets, and comparing the mental
+health service users with patients attending hospital. To do this, we looked 
+specifically at patients attending an inpatient spell for injuries or poisoning
+related to self-harm, and assessed the demographic, healthcare-related, and 
+service-related factors which influenced how broadly patients were entering the
+mental health service post-crisis spell.
+
+## CAMHS/AMHS Transition
+
+The time around when a person moves from childhood services to
+adult services is well known to be a problem within mental health services,
+with poor continuation of care causing a significant number of patients to leave
+the mental health service [@singh_camhs]. Looking specifically at the retention
+of mental health service users in Leeds, this finding is replicated, with a 
+sharp drop in proportion of patients still accessing services one year later
+between 17-19; when patients transfer from CAMHS teams to AMHS teams (Fig. 
+\@ref(fig:mhRetention)). 
+
+As a verification, this statistic was calculated in two separate
+ways: firstly (as shown in Fig. \@ref(fig:mhRetention)) by taking each person's
+age at referral, and seeing the proportion of people who have a care-contact 
+when they are one year older (for example, if a person is referred at 16, we 
+calculate the percentage of people who then have further care-contacts once they
+are 17). Secondly, this was calculated by purely seeing the proportion of people
+who were seen one year after each care-contact, and then grouping these by age
+at contact (for example, if a 16 year old person is seen at 2017/01/01, we 
+calculate the percentage of people who then have care contacts between 
+2018/01/01 to 2018/12/31). These two methods return different absolute values, 
+but similarities in the trends across ages can be seen (see 
+[Appendix 6](#appendix7)).
+
+Interestingly it can be seen that the retention of 
+both C&YP services and adult services (19+) are relatively stable, with a steady
+but sharp transition starting at patients aged 17. One possible theory for this
+is that adult services are more focussed on shorter-term packages of care than 
+C&YP services.
+
+```{r mhRetention, file = "chunks/transitionChart.R", echo = FALSE, fig.cap = "Percentage of patients who are still in contact (i.e. have made a referral or completed a care contact/activity) with the mental health service one year later, split by age. Binomial 95% confidence intervals are displayed."}
+```
+
+While there are numerous particular reasons why each specific patient would not 
+continue treatment, we are able to draw conclusions about equity of care by 
+looking more generally at the passage of different larger demographic groups
+from CAMHS to AMHS services. To achieve this, we subset the initial cohort by 
+reducing the data down to to only those patients who have
+been able to access CAMHS services near the transition threshold (those $17$, or
+$18$), in order to look at those who continue services into adulthood ($19+$).
+
+Next, each patient was flagged as *successfully transitioning* if they attended
+both CAMHS services and *at least one* adult service. This is a major 
+oversimplification, and while it would be significantly better to look instead
+at pattern of use (by looking at the number of care contacts received by each
+patient as they transition, and seeing whether care is consistent) we have made
+this simplification purely to look at the overarching factors which influence 
+patients attending even one adult service. A combination of this work and the
+following dropout work can be used to examine specific factors which tend to 
+lead to patient non-attendance.
+
+A complication in defining teams was highlighted in Output 2, but as no team
+names were known we were unable to perfectly define CAMHS and AMHS services.
+Instead, we assumed that all patients below 18 were accessing CAMHS services, 
+and patients 18 and over were referred to AMHS services. This was broadly 
+verified by considering the provider for each specific care package; as 
+mentioned previously the two largest providers focus on CAMHS services
+(Leeds Communities Healthcare) and adult services (Leeds and York Partnership 
+Foundation Trust), and while there is some crossover this accounted for roughly 
+5% of total care contacts for each provider. 
+
+A simple generalised linear (binomial) model (GLM) was used to predict each 
+patient's probability of staying in contact with the service next year, and the 
+effects of a number of factors (both demographic and relating to prior service 
+use) were assessed through odds ratios. Regression variables included were: 
+demographic (patient gender, ethnic background, mean deprivation decile of all
+residences), and historic (number of referrals, number of service teams, number 
+of care-contacts, proportion of previous contacts not attended, referral-first 
+contact waiting time in days, and total contact duration in minutes). 
+Deprivation values for patients with no LSOA recorded were imputed as decile 5 
+- the median deprivation decile for 11-25 year old residents of Leeds based upon
+the 2019 mid-year population estimates. It was hypothesised from discussion with
+providers that patients from Asian backgrounds (particularly South Asian 
+backgrounds) were less likely to seek mental health support, and preferred to 
+seek community support alternatively.
+
+### Results
+Modelling transition likelihood based upon demographic factors (age, gender, 
+ethnic background, derivation level) and service history (number of previous
+referrals/care contacts/teams accessed, average waiting time from referral to
+first care contact, total contact duration, and proportion of care contacts 
+not attended) showed that there were no significant differences in transition
+probability across people from different ethnic backgrounds (Fig. 
+\@ref(fig:transitionOdds)). Similarly, the
+average waiting time had little effect on a person's outcome during the 
+transition period. 
+
+However, there were significant differences found by deprivation - with 
+increased deprivation leading to reduced chances of successfully transitioning
+to adult services (OR: 0.92 - 0.96 per increasing deprivation decile). 
+Interestingly, the number of referrals made and number of service teams accessed
+had opposite effect on transition likelihood (referral OR: 0.55 - 0.72, service 
+teams OR: 1.29 - 1.65). Finally, a person's gender has been found to have a 
+significant effect on transition likelihood, with female service users 
+displaying a reduced chance of successfully entering adult services (OR: 0.63 -
+0.86).
+
+```{r transitionOdds, file = "chunks/transitionOddsChart.R", echo = FALSE, fig.cap = "Odds ratios for variables in predicting the probability of a 17-18 year old transitioning from CAMHS to adult services."}
+```
+
+<!-- ## Dropout Analysis -->
+
+<!-- While the CAMHS-AMHS transition is a significant issue, more broadly it is still of interest to determine any related factors which influence whether a patient within the mental health service will continue with their journey from referral through to clinician-led discharge. As such, rather than looking at specific factors affecting probability of transitioning, we can instead look at the factors which will affect whether a patient will continue their treatment to completion, or whether they will discharge themselves prior to completion. -->
+
+<!-- ### Method -->
+
+<!-- Each referral into the service can have three outcomes: "scheduled closure" if the referral was completed or closed by the clinician, "patient dropout" if the referral was closed unexpectedly, via patient request or patient recurrent non-attendance, or the referral can be "censored" if it is still open. -->
+
+<!-- We modelled the likelihood of these outcomes for each referral in two ways. Firstly, we ran a simple Cox proportional hazards regression model (package: survival, @survival-package) comparing "dropouts" to everything (grouping scheduled closures and censored data together for simplicity). The strength of this model is its relative simplicity both in implementation and analysis; however by removing the possibility of a referral being closed by a clinician this can over-simplify patient pathways and result in incorrect results. -->
+
+<!-- To account for the two separate endpoints referrals can encounter, we also used a Competing Risks Regression (CRR) Model (Fine-Gray, @finegray1999) (package: cmprsk2 @cmprsk2). In this model, rather than defining a single Kaplan-Meier estimate from which to fit a regression model, a Cumulative Incidence Function (CIF) is instead generated which estimates the marginal probability for each competing event. The CIF curve is then used as a sub-distribution function, corresponding to the Cox proportional hazard model. -->
+
+<!-- The data was processed to select one record per referral, with both patient demographic information and referral specific information present for modelling. The demographic information included patient age, sex, ethnic background and mean deprivation decile (accounting for potential moves during treatment). Referral information included primary consultation medium (in the case where multiple methods of consultation medium were used, the most frequent medium was selected), referral team, and waiting time from referral to first care-contact. -->
+
+
+<!-- ### Results -->
+
+<!-- The full results are listed in [Appendix 1](#appendix1), while the key outputs are reported here. Where hazard ratios are reported, the reported range compasses the 95% confidence interval. -->
+
+<!-- #### Ethnicity: -->
+<!-- In terms of relationship to a patient's ethnic background, both the Cox and CRR models found the patients from Asian backgrounds were significantly more likely to dropout than those patients from a white background (HR: 1.09-1.70), and patients from Black backgrounds were significantly less likely to dropout (HR: 0.42-0.90). No significant differences in numbers of scheduled closures were found. -->
+
+<!-- #### Sex: -->
+<!-- No significant relationship was found in either model, both for dropout probability and probability of scheduled closure. -->
+
+<!-- #### Deprivation: -->
+<!-- Both Cox and CRR models found that with increasing deprivation, the probability of dropout increased (HR: 1.05-1.08) and the probability of scheduled closure slightly decreased (HR: 0.98-0.99). -->
+
+<!-- #### CAMHS vs AMHS: -->
+<!-- The CRR model found that CAMHS services were more likely to feature referral dropout than AMHS services (HR: 1.22-1.43) and less likely to feature scheduled closures (HR: 0.72-0.77). No significant difference was found between CAMHS and AMHS referral patterns within the Cox model. -->
+
+<!-- #### Primary Consultation Medium: -->
+<!-- Interestingly, compared with face-to-face communication, telephone and SMS services were found to be less likely to feature dropout (HR: 0.59-0.72 and 0.54-0.89 respectively) and and more likely to feature scheduled closures (HR: 1.34, 1.46 and 1.16, 1.41 respectively) in CRR models. However, when using the simpler Cox model the inverse was found, with Telephone and SMS consultations both resulting in more frequent dropouts than face-to-face consultations (HR: 1.04-1.27 and 1.33-2.15 respectively). However, this is likely a feature of the over-simplification of the Cox model. -->
+
+<!-- #### Referral Team Type: -->
+<!-- Using community mental health teams as a baseline, crisis team referrals were found to be significantly less likely to experience dropout in CRR models (HR: 0.77-0.97), and Non-IAPT psychological therapy services were significantly more likely to feature dropout (HR: 4.25-5.37) and less likely to experience scheduled closures (HR: 0.28-0.34). Similarly to above, an interesting inverse relationship was found with crisis team referrals via the Cox model. However, as above this was assumed to be due to the flagging of legitimate "scheduled" closures as "censored". -->
+
+<!-- #### Waiting Time: -->
+<!-- No significant relationship between waiting time and referral outcome in the CRR model, and an extremely weak increase in dropout probability was found with waiting time increase (HR: 0.99-0.99) in the Cox model. -->
+
+## Inpatient Spells (Self-Harm)
+
+### Background
+While the first two parts of Output 3 focussed on the pathways of patients as 
+they moved within the mental health service, it is also of interest to consider 
+patients not-necessarily registered to the service, to examine differences in 
+the numbers of patients in receipt of secondary care for mental illnesses and
+the numbers of patients using dedicated mental health services. 
+
+It is particularly important to consider patients who attend hospital for 
+injuries or illnesses related to self-harm or self-poisoning for a number of 
+reasons. Firstly, these represent patients who have urgent mental health needs, 
+and both single and repeated incidences of self-harm inpatient spells have been 
+shown to significantly increase a person's risk of suicide. Secondly, it has
+been shown that the rate of self-harming significantly rises around adolescence,
+particularly for girls and women (see @self2004short for a thorough review).
+
+After an episode of self-harm, NICE guidance [@self2004short] recommends that 
+each inpatient receives a psychiatric assessment within 48 hours of admission, 
+and a decision to refer to a dedicated mental health be made with the patient, 
+depending upon the need of the patient. Most patients attending an emergency 
+department visit after a self-harm episode meet the criteria for a psychiatric 
+diagnosis [@haw_hawton_houston_townsend_2001], and so ideally the intersection of 
+patients attending hospital following self-harm and patients in contact with the 
+mental health service would be close to complete. However, this could vary due
+to a range of factors, such as hospital provision for mental health support, 
+the age of the patient (with young people being referred through different 
+routes to older people), and patient preference depending upon each patient's 
+background and beliefs.
+
+
+### Data and Initial Investigation
+
+Between 2016-04-01 and 2021-03-31, there were 3591 inpatient spells with a
+diagnosis (primary or secondary) of self-harm (ICD-10 X60-84) at Leeds Teaching
+Hospitals. Of these, roughly 70% (2525) of spells resulted in a referral to a
+mental health team within a week, although the proportion of non-referrals was
+not uniform across all factors. In order to look deeper into these factors,
+the patient outcome (i.e. decision to refer or not) was predicted using two 
+methods to allow for both comparison with the true outcome, and to determine
+each factor's influence on the outcome. While additional information such as 
+general inpatient admissions for mental health conditions or A&E attendances 
+could have been added, we decided to limit the data to only those patients 
+admitted for an inpatient spell to firstly limit scope and increase simplicity 
+of analysis, and secondly due to complications in coding differences between
+A&E attendances and inpatient admissions.
+
+Initially, a strong relationship between referral status and patient age was
+found (Fig. \@ref(fig:mhReferAgeDate), left), with a significant rise in number of 
+non-referrals occurring around age 17-19. This possibly represents the difference
+in either hospital policy for referrals, or a change in patient preference.
+
+When comparing numbers of patients attending hospital by date (Fig. \@ref(fig:mhReferAgeDate), right), 
+a large drop in patient attendances was found around the beginning of the COVID-19 pandemic.
+However, despite this the number of patients referred to the mental health 
+service has stayed roughly consistent, with a drop in non-referrals around March
+2020 and a small but steady increase after the initial national lockdown.
+
+```{r echo = FALSE, file = "chunks/selfHarmSpellData.R"}
+```
+
+```{r mhReferAgeDate, file = "chunks/ipReferralChart.R", echo = FALSE, fig.cap = "(left) Percentage of patients not referred to the Mental Health service within one week. Error bars denote 95% binomial confidence intervals. (right) Number of patients attending hospital for self-harm, split by post-crisis referral status (red being non-referrals and blue referrals). Figures are two-monthly averaged to increase signal-to-noise."}
+```
+
+Within the data set, a further range of variables were considered, to infer any 
+influence on referral status post-crisis. These were demographic (patient
+age, sex, ethnic background, average decile of deprivation), spell related (date of spell, 
+length of stay, whether the spell was alcohol/narcotics related, whether a 111
+call was made, whether the patient self-discharged), history related (whether 
+the patient had presented previously for a self-harm spell, whether the patient 
+was known to the mental health service), and service related (how many self-harm 
+patients had presented at the hospital within the past week). The 
+service capacity related metric was included after interest in seeing whether
+any relationship existed between higher times of capacity and lower throughput
+into the mental health service was raised. Eleven patients 
+died at hospital and forty patients did not have a recorded NHS Number so were 
+excluded from analysis.
+
+### Modelling
+Data was split into train (80%) and test (20%) datasets, and the training dataset
+was further grouped into three sub-groups for three-fold cross validation when
+hyperparameter tuning. When splitting the full dataset into test/train, the data
+were sampled such that the proportion of non-referrals to referrals was roughly
+consistent.
+
+Around 9% of patients did not have an LSOA listed as their primary residence, 
+and so for these patients no deprivation information could be determined. 
+Missing deprivation data was imputed by giving assuming these patients resided
+in an area of deprivation decile 5 (the median decile for Leeds residents) -
+slightly artificially inflating that decile's true score. All other variables 
+were fully recorded so no further imputation was necessary. Dummy variables 
+were created from all nominal variables using the package caret [@caret]. All
+data imputation and variable dummification was based upon the training data and
+applied to the test data, to avoid data leakage.
+
+Two models were considered. Initially, due to its speed and predictive power, 
+XGBoost (eXtreme Gradient Boosting, @2016arXiv160302754C) was used to predict 
+each patient's probability of *not* being referred post-crisis. Secondly, an 
+ensemble model was used, in order to see whether the combination of multiple
+models would improve predictive power. The ensemble model was made from a stack
+of five models: a binomial generalised linear model (@rstats), a random forest 
+model (@randomForest), a linear support vector machine (SVM) model (@svm), a 
+single-layer neural network (NN) (@nnet), and the above XGBoost model. Data were
+centred and scaled prior to running the NN and SVM, with the centre and width
+values taken from the training data set to avoid data leakage.
+
+While a simpler GLM would have given more easily interpretable variable effects
+on referral outcomes, we chose to use more complex models for a number of 
+reasons. Primarily, more complex models better handle non-linear interactions
+between features, allowing us to look more specifically at the pathways of 
+different sub-cohorts, and see the effects of different features on each. 
+Secondly, initial scoping with GLM and more complex models showed improved 
+performance for the complex models, better identifying individuals at higher 
+risk of non-referral, allowing us to better understand the characteristics of
+these patients.
+
+All models were individually tuned using three-fold cross validation, and the
+F-score ($2 \frac{\text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}}$) 
+was maximised to determine the optimal hyperparameters. 
+When ensembling, the models were combined using a greedy optimisation, 
+maximising the precision-recall area under the curve (AUCPR). A description of 
+each model and the hyperparameters which were tuned over is found in [Appendix 1](#appendix2). 
+
+Each model was run with the same seed, the same test/train split, and the same 
+cross-validation groups to ensure that results were comparable. To estimate 
+confidence, each model was run 80 times, and average models were constructed
+along with confidence intervals.
+
+### Results and Discussion
+While both models had similar Receiver Operating Characteristic (ROC) curves 
+(and hence similar areas under the ROC curve), it should be noted that the data
+was slightly imbalanced, with around twice as many patients being referred than
+not (or twice as many negative classes than positive). While this is not a 
+severe class imbalance, it was determined that it was large enough to that
+model comparisons should be made using Precision-Recall curves.
+
+```{r file = 'chunks/modelSpecs.R', include = FALSE}
+```
+
+Comparing the models (Fig. \@ref(fig:prCurve)), over all runs the XGBoost model had AUCPR `r auc_ci$xg_pr_auc[2]` [95% CI: `r auc_ci$xg_pr_auc[1]`, `r auc_ci$xg_pr_auc[3]`], and the ensembled model had AUCPR `r auc_ci$en_pr_auc[2]` [95% CI: `r auc_ci$en_pr_auc[1]`, `r auc_ci$en_pr_auc[3]`]. Given the class imbalance, a baseline "no knowledge" 
+predictor which predicted random values along the imbalance ratio (2.33 : 1 
+referred) would achieve an AUCPR of ~0.22.
+The difference in models is more significant at lower recall values, 
+representing the success in the ensemble model at classifying more certain 
+predictions correctly. At higher values the models performed broadly similarly,
+meaning that the ensemble model was no better at classifying the less certain
+predictions. As the ensemble model performed better both overall and for the 
+most precise predictions, further analysis focussed only on this model.
+
+```{r prCurve, file = 'chunks/plotModelSpecs.R', echo = FALSE, fig.cap = "Precision recall curves for the XGBoost models (black) and ensembled models (red). Each model run is shown via a thin line, with thicker lines showing the average model curve. The blue dashed line shows the 'no-skill' value which would be achieved through either choosing one class only, or randomly assigning positive or negative values to each patient."}
+```
+
+The effect of each variable on the final prediction from the ensemble model was
+next evaluated (Fig. \@ref(fig:vip)), to determine the most significant factors.
+Generally it was found that, aside from patient age, the spell-level and 
+hospital-level information was more important to the model than patient 
+demographic-level information, with the next five variables coming from these
+sources. It was found that the top six features accounted for around 85% of the
+model importance, with the bottom nine accounting for the remaining $\sim15\%$.
+
+As expected from the initial investigation, each patient's age played the 
+largest role in deciding their pathway into the mental health service, 
+accounting for around 30% of the feature importance. Important predictors were
+whether a patient had previously attended Leeds Teaching Hospital for one or 
+more inpatient spells related to self-harm, or whether they were known to the 
+mental health service at time of admission. The hospital capacity was found to 
+be important to the prediction accuracy.
+
+```{r vip, file = "chunks/variableImportanceChart.R", echo = FALSE, fig.cap = "Variable importance for the ensembled model prediction. The bars show the median importance (scaled to sum to 100) and the 95% confidence interval is shown via the error bars."}
+```
+
+To estimate each variable's specific effect on the model outcome, we calculated 
+the average partial dependence per feature. Partial dependence (PD)
+(@friedman2001greedy, R package: @dalex) is an estimation of the marginal effect 
+of a feature on predicted model outcome. An assumption of variable independence
+is required to estimate PD, which is seen in most features within our data - 
+with exceptions being a correlation between patient "previous crisis spell flag" 
+and patient "known to mental health service" flag ($r = 0.53$), and 
+anti-correlations between patient ethnic backgrounds. While local explainations
+via explainers such as SHAP or LIME can be more useful in some cases, PD plots
+give the advantages that they are both easy to implement and are intuitively 
+understandable, with the dependence score simply corresponding to the average
+change in predicted probability with each change in the variable.
+
+The PD plots for the top six variables from variable importance calculations are
+shown in Figure \@ref(fig:pdp). Of note are the effect of one or more previous 
+crisis spell increasing non-referral probability by around 20-40%, and the 
+effect of a patient being known to the mental health service previously 
+increasing their probability of non-referral. While the number of referrals has 
+stayed roughly consistent over the past five years, there is a slight increase 
+in non-referral probability with increased hospital attendance in the previous 
+week, although the differences are very minor. Interestingly, as deprivation 
+level increases, the probability of non-referral decreases. Finally, the longer
+a patient stays in hospital the lower their probability in non-referral, 
+potentially signifying that the highest-risk patients are being referred 
+consistently while lower-risk patients are not.
+
+```{r pdp, file = "chunks/partialDependencePlots.R", echo = FALSE, fig.cap = "Partial dependence plots from the ensembled model. Points show the calculated average partial dependence for each model run, error bars show the 95% confidence interval over all model runs, and red lines show the smoothed fit to the data. Histograms above each variable show the relative distribution of spells split by the variable."}
+```
+
+# Output 4 - Time Series Analysis
+## Data used and linkages 
+
+While referrals between 2016-04-01 and 2021-03-31 were considered for the above analysis, for time series analysis it was determined that a slightly different time-period should be used. In early 2017, a new version of MHSDS was released, resulting in a step change in recorded referrals. To account for this, the time-window was shifted, and Mental health service requests between May 2017 and September 2021 were considered. The referral counts were categorised by Gender, IMD Quintile, Age-Band and Ethnicity. There was also an attempt to compare requests to crisis services versus other services, and requests to CAMHS versus Adult services pre-COVID, during the first wave, and after the first wave. 
+
+Both service requests (referrals) and care contacts data were available, but time series analysis was limited to new service requests due to time constraints. However, there is potential to extend this analysis to care contacts (types) attended (and cancelled/missed) which could yield further insight to the patterns identified here.  
+
+Time series data was standardised and summarised at quarterly, monthly and weekly unit time. Given the period available, changes in mean/variance and processing required (holidays etc), monthly data was selected as it allowed consistent analysis of features across the variables of interest. It should be noted that variables were categorized quite broadly, making substantial assumptions, and sacrificing details about patient subsets to maximise the data available. 
+
+Monthly service requests were initially compared with outcomes (service discharges) to estimate how the underlying population (patients accessing MH services) fluctuated over time. It was expected that service discharges would lag those received and create variation in monthly populations. However, monthly service discharges mirrored service requests which suggests that the underlying population was approximately stable over the series. Due to this, further analysis of referral/discharge differences were not made.
+
+## Methods 
+
+The data set was segmented into three periods; Segment 1 (May 2017 to March 2020; pre-COVID), Segment 2 (March 2020 to September 2020; broadly within the first wave) and Segment 3 (Sept 2020 to Sept 2021; post-first wave). Each segment was assessed for seasonality, trend and extended periodicity. Figure \@ref(fig:referralTimeline) shows that, surprisingly, there was little evidence of pre-COVID seasonal patterns, but there were common features across the variables selected. Therefore, segments were defined to elucidate features of interest, rather than strictly adhering to COVID lockdown dates. 
+
+Given the lack of seasonality and trend in pre-COVID data, plus stable variance (in most cases) a linear model provided a suitable counterfactual to describe changes that occurred due to COVID. Two models were selected to describe key features in the data:
+
+* Mean level changes in Segments 2 and 3 to assess the ‘peak’ in demand and whether it subsided. 
+
+* Comparison of trend/slope changes in Segments 1 and 3 to assess how quickly service requests have returned to pre-COVID levels (if at all). 
+
+These models have substantial limitations in accurately describing the peak demand and post-first wave slope, but still provide insight into relative variations between category levels. 
+
+```{r referralTimeline, file = "chunks/referralTimeSeries.R", echo = FALSE, fig.cap = "Ratio of the number of new referrals and discharges over the number of patients making referrals/being discharged, per month. Discharges are shown as red lines and referrals as blue lines, with the shaded areas denoting time-segments for linear trend modelling. Dashed lines show linear fits to S1 and S3 data, for trend direction."}
+```
+
+## Results 
+
+#### Gender 
+
+There were only slight differences in service requests received between males and females before, during and after COVID. Female requests increased 61% from pre-COVID levels of an average 1.17 referrals per person, compared to +58% increase from males, which dropped to +27% in Segment 3 compared to +32% males. However, the rate of referral from September 2020 is decreasing quicker for females and it is expected that male service requests will take longer to return to normal pre-COVID levels. There was little data from patients with indeterminate or unknown gender and was not suitable for modelling. 
+
+#### IMD Quintile 
+
+New service requests systematically varied depending on the patient’s deprivation level. Compared to pre-COVID levels, there was a significant increase in referral rates across all levels of deprivation in Segment 2. It ranged from +72% in the most deprived group to +32% in the least deprived group (IMD Quintile 1 to 5 respectively). Service requests in Segment 3 dropped to +20-30% for each quintile, except the third which remained higher at +40%. 
+
+Note that variance in Segment 3 increased which added to uncertainty in determining level changes and slope changes, although the data points were not considered anomalous and likely to represent inconsistent service demand. 
+
+#### Ethnicity 
+
+Relative to pre-COVID levels, there was substantial variation (+50% to +110%) in activity during Segment 2 although it was followed by a decrease across all ethnicities to approximately (+20% to +30%) in Segment 3. Service request rates for most ethnicities continue to decrease, except Black or Black British or Unknown ethnicities which exhibit a slight positive increase. Unfortunately, this data suffered from high variance and volatility before, during and after COVID which adds uncertainty to these conclusions. Furthermore, recorded Ethnic Categories were broadened to reduce noise and make the modelling easier. 
+
+#### Age-Band 
+
+Service requests for 17-19 and 20-25 year olds increased from 1.25 service requests per person before COVID to a maximum of 2.75 and 3.00 service requests per person during Segment 2 This was far larger than the 11-16 years age band which exhibited a much smaller peak during Segment 2 However, where the older age bands are returning to pre-COVID levels, the younger band shows a minor increase in service requests over the Segment 3 period. 
+
+#### CAMHS / Adults  
+
+Categorising the patients as CAMHS or Adults supports the patterns explained above. Unfortunately, it was difficult to determine a change from pre-COVID rates for CAMHS service requests, as pre-COVID data was far more variable than the Segment 2 or 3 data. It is difficult to explain this variance and this data may benefit from re-defining the CAMHS cohort. However, it is notable that the Segment 3 level has increased, and does not show signs of decreasing.  
+
+#### Crisis / Other 
+
+There was a stark increase in crisis service requests (+70%) versus other services (+46%) during Segment 2. However Segment 3 demand for crisis services reduced quickly whilst other services show a longer-lasting request rate which currently persists.
+
+\newpage
+
+# Discussion
+
+Across this project, there have been a range of desired outcomes. Primarily, we
+were interested in a general full-city picture of mental health service usage by
+children and young people (11 - 25 year olds), in order to understand two 
+separate but related questions: which services are the most heavily demanded 
+(or which groups display the most need for assistance) and, by comparison with 
+non-mental health data, which services display the highest level of inequity in 
+provision (or which groups are least represented within the mental health 
+service).
+
+To achieve this goal, we initially processed the Mental Health Services Data Set
+(MHSDS), combining different versions and removing multiple duplicate files. By
+creating simpler Views of MHSDS, we were able to begin analysing the service use
+and linking the data with further data sets. This initial data processing also 
+allowed us to gain a fuller understanding of the completeness of the data;
+we have found significant lack of data coverage for patient information such as 
+parental status, Looked-After Child status, Child Protection Plan status, sexual
+identity, and young carer status. The lack of data for these demographic 
+indicators was relayed back to the mental health providers for possible future 
+analysis, and the scope was narrowed slightly to remove these indicators.
+
+Clear differences in care patterns were seen by looking across demographic 
+variables. Significant variations in the gender split of patients occur across
+the age range considered, peaking at mid-adolescence where around 70% of all 
+patients are female (and around 75% of care contacts are for female patients).
+Variations also occur when looking at patient deprivation; when standardised to
+the Leeds population we have found that significantly more people in areas of 
+higher deprivation require access to the mental health service, with around 1 in
+3 more people in the 10% most deprived areas having had access to the service than 
+those in the 10% least deprived areas. Compounding this is the finding that 
+patients from the 10% most deprived areas require almost 33% more referrals, and 
+experience around twice the number of crises than patients from the 10% least 
+deprived areas. This demonstrates the significant increase in level of need for
+people from these areas. Finally, we considered how equitably services were used
+across people from different ethnic groups. Using the 2011 census as a baseline,
+we found that only just over half the number of people from Black, Asian, and 
+minority ethnic (BAME) backgrounds were using the service than would be expected
+based upon the underlying population, showing significant improvements needed to
+ensure equitable care is given to all communities across Leeds.
+
+Next, we focussed on the period of transition, where 17-19 year olds are
+transferred from childhood and adolescent services (CAMHS) to adult services 
+(AMHS). Consistent with the literature, we found a sustained drop in patient 
+retention around this transition age, with around one in five fewer AMHS 
+patients remaining in contact with the mental health service one year past a 
+referral. Modelling of each patient's transition from CAMHS to AMHS services 
+showed a significant drop in transition likelihood with increasing deprivation, 
+and found that overall, female patients were less likely to successfully 
+transition services than male patients. This result ties in with the demographic
+picture of services split by gender; while there are more female patients using 
+services, generally as age increases the disparity decreases, with a 
+particularly sharp drop in the proportion of female care contacts occurring 
+around 17-18. It was also found that each person's previous service use affects
+their likelihood of transitioning successfully, with patients who are in contact
+with more service teams being found to be more likely to continue care in adult 
+services. Interestingly, patients who experience more referrals have a reduced 
+probability of transitioning successfully, possibly showing that if a patient is 
+re-referred multiple times then they experience worse continuation of care than 
+if they are moved between different teams without needing to completely re-refer,
+although discussion with service providers is required to test this hypothesis.
+Finally, no major differences were found in continuation of care across the 
+transition gap for patients from different ethnic backgrounds.
+
+<!-- Broadening our search slightly, we next looked to find factors associated with -->
+<!-- patients dropping out of services unexpectedly across all ages, rather than just -->
+<!-- across the transition age. By running two different survival models, we  -->
+<!-- evaluated both factors relating to patient dropout and factors relating to  -->
+<!-- expected closure of services. This was done in order to differentiate between  -->
+<!-- services which experience low retention due to patient dropout and those  -->
+<!-- which experience low retention due to expected reasons, such as those services  -->
+<!-- which solely offer short-term support before onward referral. -->
+
+<!-- We find that -->
+<!-- there are significant differences in patient dropout rates across different  -->
+<!-- ethnic groups, with Asian/Asian British patients significantly more likely to  -->
+<!-- dropout and Black/Black British patients significantly less likely to dropout  -->
+<!-- than white patients. Comparing this to the finding that patients from BAME  -->
+<!-- backgrounds are underrepresented within the mental health service, this -->
+<!-- suggests that both entry to the service and continued service use is a  -->
+<!-- significant problem for Asian communities across Leeds. This finding has been  -->
+<!-- echoed through conversations with service providers, who noted a barriers to  -->
+<!-- entry for people from South Asian communities particularly. Conversely, although  -->
+<!-- entry into the service is a problem for those from Black communities, once  -->
+<!-- people from Black backgrounds have been referred they are more likely to  -->
+<!-- continue using services until discharge by a clinician. It has been noted that  -->
+<!-- this could be an indicator that only those with the most intense needs gain  -->
+<!-- access to services for people from Black communities, and hence once people are -->
+<!-- in the service they are more likely to continue their treatment until the end. -->
+<!-- When looking at the breakdown of service team type across different ethnic  -->
+<!-- groups, we find that proportionally more crisis and psychosis intervention teams  -->
+<!-- are accessed by people from Black backgrounds, potentially validating this  -->
+<!-- hypothesis, although further investigation is required. Similarly, we have found  -->
+<!-- that again increased deprivation level is correlated with increased dropout  -->
+<!-- rate, showing that even though people from more deprived areas are in greater  -->
+<!-- need of services (and experience more crises), they are also more likely to drop -->
+<!-- out of services, requiring more work to assist people in continuation of care. -->
+
+<!-- Comparing CAMHS and AMHS services, we find that CAMHS services are more likely -->
+<!-- to experience patient dropout. This goes against the finding that year-on-year  -->
+<!-- patient retention is generally being higher in CAMHS services overall,  -->
+<!-- suggesting that possible routes into the service must be more accessible to  -->
+<!-- allow re-entry after dropout. Further work should be done to compare the routes -->
+<!-- by which CAMHS and AMHS patients re-enter services after dropping out. Finally,  -->
+<!-- across all service team types we find that Non-IAPT psychological therapy  -->
+<!-- referrals experience patient dropout at a significantly higher rate than  -->
+<!-- community mental health services (HR: 4.25-5.37). -->
+
+As a comparison, we next compared non-mental health acute care data with mental 
+health referrals, to try to look for possible barriers to service entry. We
+focussed on inpatients spells related to self-harm at Leeds Teaching 
+Hospitals and looked at the proportion of patients referred into the mental 
+health service post-spell. We used a stack of models to predict each patient's 
+non-referral probability, based upon demographic information, hospital spell 
+information, hospital history data, and service capacity related information. 
+We found that the most useful predictors of non-referral was each patient's age,
+demonstrating significant differences between CAMHS and AMHS referrals even 
+post-crisis. Interestingly, the next most important factors determining
+non-referral likelihood were spell-related, history-related, and 
+service-related, with patients known to the service and patients who have had 
+previous crises significantly less likely to be referred after discharge. We
+have found a slight but sustained increase in non-referral probability with 
+increased service use within the week prior to each crisis spell, suggesting 
+that service capacity may play a role in determining whether patients are able
+to access mental health services after a self-harm episode. Finally, we have 
+found that interestingly, patients from more deprived areas are slightly *more* 
+likely to be referred into mental health services on discharge, showing 
+more equitable service use across deprivation levels. 
+
+Finally, we considered the effect of the COVID-19 pandemic on services. We 
+compared the number of service requests and discharges occurring during three 
+time segments: Segment 1 (May 2017 - March 2020), Segment 2 (March 2020 - 
+September 2020), and Segment 3 (September 2020 - September 2021), looking for 
+both seasonal trends pre-COVID and changes in service usage across demographic 
+factors and service 
+team types. Across all variables, there was a relatively stable level of service
+usage pre-COVID, significant increases in referrals and discharges 
+during our Segment 2 time-period, followed by general decreases in service use in Segment 3. 
+Generally, during the Segment 2 (first-wave) peak substantially more referrals were made by 
+people living in the most deprived areas than those living in the least deprived
+areas, displaying the significant increase for need among these areas. We find
+that there were similarly stark increase in crisis service use during the peak,
+which correlates well with the finding that people from more deprived areas are
+significantly more likely to require crisis services than those from less 
+deprived areas. Similar disparities were seen across ages, with younger people
+(11-16) experiencing a much smaller increase in service use than older people 
+(17+), although while service usage decreased post-first wave (Segment 3) for older people, there
+is an increase in the number of service requests for younger people.
+
+Overall, while disparities in both access to care and continuation of care have 
+been found here, future work should focus on a qualitative investigation into
+possible causes of these disparities, in order to assist with future planning. 
+Similarly, although simple linear models were found to be good estimators of 
+referral and discharge patterns over time, future work should look to extend 
+these models to fully investigate the effects of the COVID-19 pandemic on the 
+mental health service, possibly by using non-linear models to more accurately
+assess changes over time, or change-point analysis to precisely pinpoint times
+when service use changed significantly, rather than prescribing set periods to
+look at.
+
+\newpage
+
+# References
+
+<div id="refs"></div>
+
+\newpage
+
+<!-- # Appendix 1 - Survival Model Hazard Ratios {#appendix1} -->
+<!-- ```{r echo = FALSE, eval = !file.exists('dropoutHR.jpg'), file = "chunks/dropoutHR.R"} -->
+<!-- ``` -->
+
+<!-- ![Cox and Competing Risks Regression Results](dropoutHR.jpg) -->
+
+\newpage
+
+# Appendix 1 - Machine Learning Model Descriptions {#appendix2}
+
+```{r echo = FALSE, eval = !file.exists('hyperparameters.jpg'), file = "chunks/hyperparameter.R"}
+```
+
+![Models and hyperparameters used to predict non-referral into the mental health service after a self-harm inpatient spell](hyperparameters.jpg)
+
+\newpage
+
+# Appendix 2 - Ethnic Background Population Comparison {#appendix3}
+
+```{r echo = FALSE, file = "chunks/ethnicityChartYearly.R", fig.cap = "Proportion of patients from a BAME background vs proportion of residents from a BAME background, per financial year. Points show the values for each MSOA, the solid black line shows the 1:1 line, and the dashed lines show the linear fit to the data (with the intercept set at 0)."}
+```
+
+# Appendix 3 - Referral Source {#appendix4}
+```{r echo = FALSE, fig.cap = "Count of patients referred, by referral source, split by age-band. Counts under five have been replaced by ':' for suppression."}
+cohort_referrals %>% 
+  distinct(service_id, .keep_all = TRUE) %>% 
+  mutate(
+    age_band = case_when(
+      age_at_referral > 19 ~ '20-25', 
+      age_at_referral > 16 ~ '17-19', 
+      age_at_referral > 10 ~ '11-16', 
+      TRUE ~ NA_character_
+    )
+  ) %>% 
+  filter(!is.na(age_band)) %>% 
+  group_by(age_band, referral_source) %>% 
+  summarise(n_referrals = n()) %>% 
+  ungroup() %>% 
+  mutate(
+    n_referrals = if_else(
+      n_referrals < 5, 
+      ':', 
+      as.character(n_referrals)
+    )
+  ) %>% 
+  pivot_wider(names_from = age_band, values_from = n_referrals) %>% 
+  mutate(referral_source = str_wrap(referral_source, 50)) %>%
+  knitr::kable() %>%
+  kableExtra::column_spec(1, width = "25em")
+```
+
+\newpage
+
+# Appendix 4 - Referral Reason {#appendix5}
+
+```{r echo = FALSE, fig.cap = "Count of patients referred by referral reason, split by age-band. Counts under five have been replaced by ':' for suppression."}
+cohort_referrals %>% 
+  distinct(service_id, .keep_all = TRUE) %>% 
+  mutate(
+    age_band = case_when(
+      age_at_referral > 19 ~ '20-25', 
+      age_at_referral > 16 ~ '17-19', 
+      age_at_referral > 10 ~ '11-16', 
+      TRUE ~ NA_character_
+    )
+  ) %>% 
+  filter(!is.na(age_band)) %>% 
+  group_by(age_band, referral_reason) %>% 
+  summarise(n_referrals = n()) %>% 
+  ungroup() %>% 
+  mutate(
+    n_referrals = if_else(
+      n_referrals < 5, 
+      ':', 
+      as.character(n_referrals)
+    )
+  ) %>% 
+  pivot_wider(names_from = age_band, values_from = n_referrals) %>% 
+  knitr::kable()
+```
+
+\newpage
+
+# Appendix 5 - Service Team Type {#appendix6}
+```{r echo = FALSE, fig.cap = "Count of patients referred, by service team type, split by age-band. Counts under five have been replaced by ':' for suppression."}
+cohort_referrals %>% 
+  distinct(service_id, .keep_all = TRUE) %>% 
+  mutate(
+    age_band = case_when(
+      age_at_referral > 19 ~ '20-25', 
+      age_at_referral > 16 ~ '17-19', 
+      age_at_referral > 10 ~ '11-16', 
+      TRUE ~ NA_character_
+    )
+  ) %>% 
+  filter(!is.na(age_band)) %>% 
+  group_by(age_band, referral_team_type) %>% 
+  summarise(n_referrals = n()) %>% 
+  ungroup() %>% 
+  mutate(
+    n_referrals = if_else(
+      n_referrals < 5, 
+      ':', 
+      as.character(n_referrals)
+    )
+  ) %>% 
+  pivot_wider(names_from = age_band, values_from = n_referrals) %>% 
+  knitr::kable()
+```
+
+\newpage
+
+# Appendix 6 - Mental Health Retention {#appendix7}
+```{r file = "chunks/transitionChart.R", echo = FALSE, fig.cap = "Percentage of patients who are still in contact (i.e. have made a referral or completed a care contact/activity) with the mental health service one year later, split by age. Binomial 95% confidence intervals are displayed. Two calculated values are shown, firstly the percentage of people seen at one age and then seen again at the next (blue), and secondly the percentage of people seen one year after each care-contact (red)."}
+```
+
+\newpage
+
+# Appendix 7 - Mental Health Retention By Demographic Factors {#appendix8}
+```{r, fig.height = 6, file = "chunks/transitionDemographicChart.R", echo = FALSE, fig.cap = "Percentage of patients who are still in contact (i.e. have made a referral or completed a care contact/activity) with the mental health service one year later, split by age and demographic factors. Binomial 95% confidence intervals are displayed. Demographic factors shown are gender (top), deprivation quintile showing only most and least deprived 20% (middle) and ethnic group (bottom)."}
+```
