@@ -52,7 +52,7 @@ to build the full report, patient identifiable data is required.
 
 As patient data has not been saved in this repository, a direct connection to 
 the Leeds Data Model (LDM) database will be required, which is administered by 
-Leeds CCG and the North East Commissioning Service (NECS). Please contact 
+Leeds CCG and the North of England Commissioning Service (NECS). Please contact 
 Souheila Fox if you believe you should have permission to access this data.
 
 Once you have access to the LDM, you can update `Codes/config.yml` with the 
